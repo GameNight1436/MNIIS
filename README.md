@@ -1,13 +1,13 @@
-# Minit
-Modular neural interface init system for ComputerCraft
+# MNIIS
+Modular neural interface init system for CC tweaked based on minit!
 
 ## Installation
 
-Run in shell `wget run https://raw.github.com/Ale32bit/Minit/main/installer.lua`
+Run in shell `wget run https://raw.githubusercontent.com/GameNight1436/MNIIS/main/installer.lua`
 
 ## Requirements
 
-This software must be installed in a neural interface from the Plethora mod for ComputerCraft.
+This software must be installed in a neural interface from the Plethora mod for CC tweaked.
 
 **Minimal usage**:
 - Introspection module
@@ -22,3 +22,7 @@ This software must be installed in a neural interface from the Plethora mod for 
 **AutoFeed module**:
 - Introspection module
 - Entity sensor
+
+**Xray module**:
+- Overlay Glasses
+- Block Scanner

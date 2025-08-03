@@ -1,26 +1,26 @@
--- Minit Beta 1.0.0
--- Copyright (C) 2023 AlexDevs
+-- MNIIS Beta 1.0.0
+-- Copyright (C) 2025 GameNight1436
 -- This software is licensed under the MIT license.
 
-settings.define("minit.cycleSleep", {
+settings.define("MNIIS.cycleSleep", {
     description = "Sleep time between cycles",
     type = "number",
     default = 0.1,
 })
 
-settings.define("minit.cycleTimeout", {
+settings.define("MNIIS.cycleTimeout", {
     description = "Cycles timeout",
     type = "number",
     default = 1,
 })
 
-settings.define("minit.modulesPath", {
+settings.define("MNIIS.modulesPath", {
     description = "Path to modules",
     type = "string",
     default = "modules",
 })
 
-local modulesPath = settings.get("minit.modulesPath")
+local modulesPath = settings.get("MNIIS.modulesPath")
 local neuralInterface
 
 local expect = require("cc.expect").expect
@@ -41,7 +41,7 @@ end
 
 local modules = {}
 local function loadModules()
-    log("Minit", "Loading modules from /" .. modulesPath)
+    log("MNIIS", "Loading modules from /" .. modulesPath)
     local files = fs.list(modulesPath)
     for i = 1, #files do
         local ok, par = pcall(require, fs.combine(modulesPath, files[i])
@@ -50,9 +50,9 @@ local function loadModules()
         if ok then
             par.name = par.name or files[i]:gsub("%.lua$", "")
             table.insert(modules, par)
-            log("Minit", "Loaded module " .. par.name)
+            log("MNIIS", "Loaded module " .. par.name)
         else
-            logError("Minit", "Could not load module " .. files[i] .. ": " .. par)
+            logError("MNIIS", "Could not load module " .. files[i] .. ": " .. par)
         end
     end
 end
@@ -115,7 +115,7 @@ local function setupNeuralInterface()
 
     local meta = getOwner()
     if not meta or not meta.isAlive then
-        log("Minit", "Waiting for respawn...")
+        log("MNIIS", "Waiting for respawn...")
     end
     while not meta or not meta.isAlive do
         sleep(0.2)
@@ -130,7 +130,7 @@ local function cycleUpdate()
 
     parallel.waitForAll(getCallbacks("update", metaOwner))
 
-    sleep(settings.get("minit.cycleSleep"))
+    sleep(settings.get("MNIIS.cycleSleep"))
 end
 
 local function tasksHandler()
@@ -163,7 +163,7 @@ local function main()
         parallel.waitForAny(
             cycleUpdate,
             function()
-                sleep(settings.get("minit.cycleTimeout"))
+                sleep(settings.get("MNIIS.cycleTimeout"))
             end
         )
     end
@@ -180,7 +180,7 @@ parallel.waitForAny(
                 if err == "Terminated" then
                     break
                 end
-                logError("Minit", err)
+                logError("MNIIS", err)
                 sleep(1)
             end
         end

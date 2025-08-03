@@ -1,13 +1,13 @@
--- Minit installer
--- Copyright (C) 2023 AlexDevs
+-- MNIIS installer
+-- Copyright (C) 2025 GameNight1436
 -- This software is licensed under the MIT license.
 
 local remote = "https://raw.githubusercontent.com"
-local repository = "Ale32bit/Minit"
+local repository = "GameNight1436/MNIIS"
 local branch = "main"
 
 local files = {
-    "minit.lua",
+    "MNIIS.lua",
 }
 
 local modulesPath = "modules"
@@ -15,6 +15,7 @@ local modules = {
     { name = "Elytra Flight", file = "flight.lua" },
     { name = "AutoFeed",      file = "autofeed.lua" },
     { name = "ESpeak",        file = "espeak.lua" },
+    { name = "Xray",        file = "xray.lua" },
 }
 local function get(file)
     local url = string.format("%s/%s/%s/%s", remote, repository, branch, file)
@@ -34,10 +35,10 @@ local function saveFile(path, content)
     file.close()
 end
 
-print("Minit installer")
-print("Copyright (C) 2023 AlexDevs")
+print("MNIIS installer")
+print("Copyright (C) 2025 GameNight1436")
 print("This software is licensed under the MIT license.")
-print("https://github.com/Ale32bit/Minit/blob/main/LICENSE")
+print("https://github.com/GameNight1436/MNIIS/blob/main/LICENSE")
 print()
 print("Select modules to install:")
 
@@ -72,7 +73,7 @@ if input:lower() ~= "y" and input:lower() ~= "" then
 end
 
 print()
-print("Installing Minit...")
+print("Installing MNIIS...")
 
 for i, v in ipairs(files) do
     local content, err = get(v)
