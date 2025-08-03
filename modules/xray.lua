@@ -24,9 +24,14 @@ local ores = {
 function module.setup(ni)
     neural = ni
     c3d = neural.canvas3d()
+    if not c3d then
+        print("Error: canvas3d not supported or not available.")
+    end
 end
 
 function module.update(meta)
+    if not c3d then return end
+
     if module.timeout < 3 then
         module.timeout = module.timeout + 0.1
         return
@@ -41,6 +46,10 @@ function module.update(meta)
     end
 
     local obj = c3d.create()
+    if not obj or not obj.addLine then
+        print("Error: canvas3d.create() failed or addLine method missing")
+        return
+    end
 
     for _, v in ipairs(blocks) do
         local color = ores[v.name]
