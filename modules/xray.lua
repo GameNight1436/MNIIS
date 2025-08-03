@@ -1,133 +1,116 @@
-	-- Hellscaped's Minit Xray Module https://p.reconnected.cc/bkMhRFmwc
-
-	local module = {
-
-	    name = "xray",
-
-	    cached = true,
-
-	    timeout = 0
-
-	}
-
-	 
-
-	local neural,c3d
-
-	 
-
-	local targets = {
-
-	    ["minecraft:ancient_debris"] = {150, 75, 0},
-
-	    ["minecraft:deepslate_diamond_ore"] = {63, 195, 235},
-
-	    ["minecraft:deepslate_emerald_ore"] = {0, 255, 0},
-
-	    ["minecraft:deepslate_gold_ore"] = {255, 255, 0},
-
-	--    ["minecraft:deepslate_iron_ore"] = {255, 0, 0},
-
-	--    ["minecraft:deepslate_lapis_ore"] = {0, 0, 255},
-
-	    ["minecraft:deepslate_redstone_ore"] = {255, 0, 0},
-
-	    ["minecraft:diamond_ore"] = {63, 195, 236},
-
-	    ["minecraft:emerald_ore"] = {0, 255, 0},
-
-	    ["minecraft:gold_ore"] = {255, 255, 0},
-
-	--    ["minecraft:iron_ore"] = {255, 0, 0},
-
-	--    ["minecraft:lapis_ore"] = {0, 0, 255},
-
-	    ["minecraft:redstone_ore"] = {255, 0, 0},
-
-	    ["minecraft:nether_gold_ore"] = {255, 255, 0},
-
-	    ["minecraft:nether_quartz_ore"] = {255, 255, 255},
-
-	    ["computercraft:turtle_normal"] = {120, 124, 153},
-
-	    ["minecraft:chest"] = { 158, 132, 66 },
-
-	    ["minecraft:wet_sponge"] = { 140, 158, 66},
-
-	    ["minecraft:sponge"] = { 196, 176, 120 },
-
-	--    ["minecraft:mossy_cobblestone"] = { 140, 158,66},
-
-	    ["minecraft:suspicious_gravel"] = { 196, 176, 120 },
-
-	    ["minecraft:suspicious_sand"] = { 196, 176, 120 }
-
-	}
-
-	 
-
-	function module.setup(ni)
-
-	    neural = ni
-
-	    c3d = neural.canvas3d()
-
-	end
-
-	 
-
-	function module.update(meta)
-
-	    if module.timeout < 3 then
-
-	--        print(module.timeout)
-
-	        module.timeout = module.timeout + 0.1
-
-	        return
-
-	    end
-
-	    module.timeout = 0
-
-	    local blks = neural.scan()
-
-	    if module.cached then
-
-	        c3d.clear()
-
-	        module.cached = false
-
-	    end
-
-	    local obj = c3d.create()
-
-	    for _,v in ipairs(blks) do
-
-	        if targets[v.name] then
-
-	--            if v.name == "minecraft:spawner" then
-
-	--                print(v.y)
-
-	  --          end
-
-	            local highlight = obj.addBox(v.x-0.6,v.y-0.6,v.z-0.6, 1.2, 1.2, 1.2)
-
-	            highlight.setColor(table.unpack(targets[v.name]))
-
-	            highlight.setDepthTested(false)
-
-	            highlight.setAlpha(64)
-
-	            module.cached = true
-
-	        end
-
-	    end
-
-	end
-
-	 
-
-	return module
+-- xray script from https://plethora.madefor.cc/examples/ore-scanner.html
+
+-- ==== Configuration ====
+local scanInterval = 0.2
+local renderInterval = 0.05
+local scannerRange = 8
+local scannerWidth = scannerRange * 2 + 1
+
+local size = 0.5
+local cellSize = 16
+local offsetX, offsetY = 75, 75
+
+local orePriority = {
+    ["minecraft:diamond_ore"] = 10,
+    ["minecraft:emerald_ore"] = 10,
+    ["minecraft:gold_ore"] = 8,
+    ["minecraft:redstone_ore"] = 5,
+    ["minecraft:lapis_ore"] = 5,
+    ["minecraft:iron_ore"] = 2,
+    ["minecraft:coal_ore"] = 1
+}
+
+local oreColors = {
+    ["minecraft:coal_ore"] = {150, 150, 150},
+    ["minecraft:iron_ore"] = {255, 150, 50},
+    ["minecraft:gold_ore"] = {255, 255, 0},
+    ["minecraft:diamond_ore"] = {0, 255, 255},
+    ["minecraft:redstone_ore"] = {255, 0, 0},
+    ["minecraft:lapis_ore"] = {0, 50, 255},
+    ["minecraft:emerald_ore"] = {0, 255, 0}
+}
+
+-- ==== Peripheral Setup ====
+local ni = peripheral.find("neuralInterface")
+if not ni then error("Neural interface not found.", 0) end
+if not ni.hasModule("plethora:scanner") then error("Block scanner module required.", 0) end
+if not ni.hasModule("plethora:glasses") then error("Overlay glasses module required.", 0) end
+
+local canvas = ni.canvas()
+canvas.clear()
+
+-- ==== Minimap Grid Setup ====
+local blocks, texts = {}, {}
+for x = -scannerRange, scannerRange do
+    blocks[x], texts[x] = {}, {}
+    for z = -scannerRange, scannerRange do
+        blocks[x][z] = {block = nil, y = nil}
+        texts[x][z] = canvas.addText({0, 0}, " ", 0xFFFFFFFF, size)
+    end
+end
+
+canvas.addText({offsetX, offsetY}, "^", 0xFFFFFFFF, size * 2)
+
+-- ==== Scan Function ====
+local function scan()
+    while true do
+        local scanned = ni.scan()
+        for x = -scannerRange, scannerRange do
+            for z = -scannerRange, scannerRange do
+                local bestBlock, bestY, bestScore = nil, nil, -1
+
+                for y = -scannerRange, scannerRange do
+                    local i = scannerWidth ^ 2 * (x + scannerRange) +
+                              scannerWidth * (y + scannerRange) +
+                              (z + scannerRange) + 1
+                    local blk = scanned[i]
+                    if blk then
+                        local score = orePriority[blk.name]
+                        if score and score > bestScore then
+                            bestBlock, bestY, bestScore = blk.name, y, score
+                        end
+                    end
+                end
+
+                blocks[x][z].block = bestBlock
+                blocks[x][z].y = bestY
+            end
+        end
+        sleep(scanInterval)
+    end
+end
+
+-- ==== Render Function ====
+local function render()
+    while true do
+        local meta = ni.getMetaOwner and ni.getMetaOwner()
+        local yaw = meta and meta.yaw or 180
+        local angle = math.rad(-yaw % 360)
+
+        for x = -scannerRange, scannerRange do
+            for z = -scannerRange, scannerRange do
+                local block = blocks[x][z]
+                local text = texts[x][z]
+
+                if block.block then
+                    local px = math.cos(angle) * -x - math.sin(angle) * -z
+                    local py = math.sin(angle) * -x + math.cos(angle) * -z
+
+                    local sx = math.floor(px * size * cellSize)
+                    local sy = math.floor(py * size * cellSize)
+
+                    text.setPosition(offsetX + sx, offsetY + sy)
+                    text.setText(tostring(block.y))
+                    text.setColor(table.unpack(oreColors[block.block] or {255, 255, 255}))
+                else
+                    text.setText(" ")
+                end
+            end
+        end
+
+        sleep(renderInterval)
+    end
+end
+
+-- ==== Run Everything ====
+parallel.waitForAll(scan, render)
