@@ -77,7 +77,10 @@ for x = -scannerRange, scannerRange do
     end
 end
 
-canvas.addText({offsetX, offsetY}, "^", 0xFFFFFFFF, size * 2)
+canvas.addText({ offsetX, offsetY }, "^", 0xFFFFFFFF, size * 2)
+
+local radius = scannerRange * cellSize * size + cellSize / 2
+canvas.addCircle({offsetX, offsetY}, radius, 0xFFFFFF)
 
 -- ==== Scan Function ====
 local function scan()
