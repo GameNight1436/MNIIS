@@ -79,13 +79,6 @@ end
 
 canvas.addText({ offsetX, offsetY }, "^", 0xFFFFFFFF, size * 2)
 
-canvas.addShape("circle", {
-    position = {offsetX, offsetY},
-    radius = radius,
-    color = 0xFFFFFF,
-    fill = false
-})
-
 -- ==== Scan Function ====
 local function scan()
     while true do
