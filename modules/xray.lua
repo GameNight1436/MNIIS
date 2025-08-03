@@ -10,24 +10,52 @@ local size = 0.5
 local cellSize = 16
 local offsetX, offsetY = 75, 75
 
+local module = {
+    name = "xray",
+}
+
 local orePriority = {
     ["minecraft:diamond_ore"] = 10,
+    ["minecraft:deepslate_diamond_ore"] = 10,
     ["minecraft:emerald_ore"] = 10,
+    ["minecraft:deepslate_emerald_ore"] = 10,
+    ["minecraft:ancient_debris"] = 9,
     ["minecraft:gold_ore"] = 8,
+    ["minecraft:deepslate_gold_ore"] = 8,
+    ["minecraft:nether_gold_ore"] = 8,
     ["minecraft:redstone_ore"] = 5,
+    ["minecraft:deepslate_redstone_ore"] = 5,
     ["minecraft:lapis_ore"] = 5,
+    ["minecraft:deepslate_lapis_ore"] = 5,
     ["minecraft:iron_ore"] = 2,
-    ["minecraft:coal_ore"] = 1
+    ["minecraft:deepslate_iron_ore"] = 2,
+    ["minecraft:copper_ore"] = 2,
+    ["minecraft:deepslate_copper_ore"] = 2,
+    ["minecraft:coal_ore"] = 1,
+    ["minecraft:deepslate_coal_ore"] = 1,
+    ["minecraft:nether_quartz_ore"] = 1
 }
 
 local oreColors = {
     ["minecraft:coal_ore"] = {150, 150, 150},
+    ["minecraft:deepslate_coal_ore"] = {100, 100, 100},
     ["minecraft:iron_ore"] = {255, 150, 50},
+    ["minecraft:deepslate_iron_ore"] = {200, 120, 40},
+    ["minecraft:copper_ore"] = {255, 120, 0},
+    ["minecraft:deepslate_copper_ore"] = {200, 100, 0},
     ["minecraft:gold_ore"] = {255, 255, 0},
+    ["minecraft:deepslate_gold_ore"] = {200, 200, 0},
+    ["minecraft:nether_gold_ore"] = {255, 220, 0},
     ["minecraft:diamond_ore"] = {0, 255, 255},
+    ["minecraft:deepslate_diamond_ore"] = {0, 200, 200},
     ["minecraft:redstone_ore"] = {255, 0, 0},
+    ["minecraft:deepslate_redstone_ore"] = {200, 0, 0},
     ["minecraft:lapis_ore"] = {0, 50, 255},
-    ["minecraft:emerald_ore"] = {0, 255, 0}
+    ["minecraft:deepslate_lapis_ore"] = {0, 30, 200},
+    ["minecraft:emerald_ore"] = {0, 255, 0},
+    ["minecraft:deepslate_emerald_ore"] = {0, 200, 0},
+    ["minecraft:nether_quartz_ore"] = {255, 255, 255},
+    ["minecraft:ancient_debris"] = {128, 0, 64}
 }
 
 -- ==== Peripheral Setup ====

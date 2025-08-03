@@ -14,7 +14,6 @@ local modulesPath = "modules"
 local modules = {
     { name = "Elytra Flight", file = "flight.lua" },
     { name = "AutoFeed",      file = "autofeed.lua" },
-    { name = "ESpeak",        file = "espeak.lua" },
     { name = "Xray",        file = "xray.lua" },
 }
 local function get(file)
