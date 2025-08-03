@@ -79,8 +79,12 @@ end
 
 canvas.addText({ offsetX, offsetY }, "^", 0xFFFFFFFF, size * 2)
 
-local radius = scannerRange * cellSize * size + cellSize / 2
-canvas.addCircle({offsetX, offsetY}, radius, 0xFFFFFF)
+canvas.addShape("circle", {
+    position = {offsetX, offsetY},
+    radius = radius,
+    color = 0xFFFFFF,
+    fill = false
+})
 
 -- ==== Scan Function ====
 local function scan()
