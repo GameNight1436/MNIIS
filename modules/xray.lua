@@ -1,66 +1,133 @@
--- iikk_a's Ore Tracer Module https://github.com/iikk-a/Plethora-Ore-Tracers
+	-- Hellscaped's Minit Xray Module https://p.reconnected.cc/bkMhRFmwc
 
-local module = {
-    name = "xray",
-    cached = true,
-    timeout = 0
-}
+	local module = {
 
-local neural, c3d
+	    name = "xray",
 
-local ores = {
-    ["minecraft:coal_ore"] = {0, 0, 0},
-    ["minecraft:iron_ore"] = {255, 150, 50},
-    ["minecraft:redstone_ore"] = {255, 0, 0},
-    ["minecraft:gold_ore"] = {255, 255, 0},
-    ["minecraft:lapis_ore"] = {0, 50, 255},
-    ["minecraft:diamond_ore"] = {0, 255, 255},
-    ["minecraft:emerald_ore"] = {0, 255, 0},
-    ["ic2:resource"] = {0, 90, 0},
-    ["appliedenergistics2:quartz_ore"] = {227, 252, 250},
-    ["thermalfoundation:ore_fluid"] = {120, 23, 37}
-}
+	    cached = true,
 
-function module.setup(ni)
-    neural = ni
-    c3d = neural.canvas3d()
-    if not c3d then
-        print("Error: canvas3d not supported or not available.")
-    end
-end
+	    timeout = 0
 
-function module.update(meta)
-    if not c3d then return end
+	}
 
-    if module.timeout < 3 then
-        module.timeout = module.timeout + 0.1
-        return
-    end
+	 
 
-    module.timeout = 0
-    local blocks = neural.scan()
+	local neural,c3d
 
-    if module.cached then
-        c3d.clear()
-        module.cached = false
-    end
+	 
 
-    local obj = c3d.create()
-    if not obj or not obj.addLine then
-        print("Error: canvas3d.create() failed or addLine method missing")
-        return
-    end
+	local targets = {
 
-    for _, v in ipairs(blocks) do
-        local color = ores[v.name]
-        if color then
-            local highlight = obj.addLine({0, -1, 0}, {v.x, v.y, v.z}, 3.0)
-            highlight.setColor(table.unpack(color))
-            highlight.setDepthTested(false)
-            highlight.setAlpha(255)
-            module.cached = true
-        end
-    end
-end
+	    ["minecraft:ancient_debris"] = {150, 75, 0},
 
-return module
+	    ["minecraft:deepslate_diamond_ore"] = {63, 195, 235},
+
+	    ["minecraft:deepslate_emerald_ore"] = {0, 255, 0},
+
+	    ["minecraft:deepslate_gold_ore"] = {255, 255, 0},
+
+	--    ["minecraft:deepslate_iron_ore"] = {255, 0, 0},
+
+	--    ["minecraft:deepslate_lapis_ore"] = {0, 0, 255},
+
+	    ["minecraft:deepslate_redstone_ore"] = {255, 0, 0},
+
+	    ["minecraft:diamond_ore"] = {63, 195, 236},
+
+	    ["minecraft:emerald_ore"] = {0, 255, 0},
+
+	    ["minecraft:gold_ore"] = {255, 255, 0},
+
+	--    ["minecraft:iron_ore"] = {255, 0, 0},
+
+	--    ["minecraft:lapis_ore"] = {0, 0, 255},
+
+	    ["minecraft:redstone_ore"] = {255, 0, 0},
+
+	    ["minecraft:nether_gold_ore"] = {255, 255, 0},
+
+	    ["minecraft:nether_quartz_ore"] = {255, 255, 255},
+
+	    ["computercraft:turtle_normal"] = {120, 124, 153},
+
+	    ["minecraft:chest"] = { 158, 132, 66 },
+
+	    ["minecraft:wet_sponge"] = { 140, 158, 66},
+
+	    ["minecraft:sponge"] = { 196, 176, 120 },
+
+	--    ["minecraft:mossy_cobblestone"] = { 140, 158,66},
+
+	    ["minecraft:suspicious_gravel"] = { 196, 176, 120 },
+
+	    ["minecraft:suspicious_sand"] = { 196, 176, 120 }
+
+	}
+
+	 
+
+	function module.setup(ni)
+
+	    neural = ni
+
+	    c3d = neural.canvas3d()
+
+	end
+
+	 
+
+	function module.update(meta)
+
+	    if module.timeout < 3 then
+
+	--        print(module.timeout)
+
+	        module.timeout = module.timeout + 0.1
+
+	        return
+
+	    end
+
+	    module.timeout = 0
+
+	    local blks = neural.scan()
+
+	    if module.cached then
+
+	        c3d.clear()
+
+	        module.cached = false
+
+	    end
+
+	    local obj = c3d.create()
+
+	    for _,v in ipairs(blks) do
+
+	        if targets[v.name] then
+
+	--            if v.name == "minecraft:spawner" then
+
+	--                print(v.y)
+
+	  --          end
+
+	            local highlight = obj.addBox(v.x-0.6,v.y-0.6,v.z-0.6, 1.2, 1.2, 1.2)
+
+	            highlight.setColor(table.unpack(targets[v.name]))
+
+	            highlight.setDepthTested(false)
+
+	            highlight.setAlpha(64)
+
+	            module.cached = true
+
+	        end
+
+	    end
+
+	end
+
+	 
+
+	return module
